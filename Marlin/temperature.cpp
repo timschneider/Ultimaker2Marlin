@@ -1125,7 +1125,7 @@ ISR(TIMER0_COMPB_vect)
 	// Check if the requested power is greater than the one from the heater bed
 	// e.g. this is the case while heating up 
 	// both hot ends can be powered up at the same time
-	if((soft_pwm_0 + soft_pwm_1) > soft_pwm_bed && bidding < bidding_threshold) 
+	if((soft_pwm_0 + soft_pwm_1) >= soft_pwm_bed && bidding < bidding_threshold) 
 	{
 		if(soft_pwm_0 > 0){ WRITE(HEATER_0_PIN,1); bidding += 1; }
 		if(soft_pwm_1 > 0){ WRITE(HEATER_1_PIN,1); bidding += 1; }
