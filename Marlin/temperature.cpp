@@ -1110,13 +1110,27 @@ ISR(TIMER0_COMPB_vect)
   #if HEATER_BED_PIN > -1
   static unsigned char soft_pwm_b;
   #endif
+  unsigned char bidding = 0;
+  
+  static unsigned char bidding_threshold = 1;
 
   if(pwm_count == 0){
     soft_pwm_0 = soft_pwm[0];
-    if(soft_pwm_0 > 0) WRITE(HEATER_0_PIN,1);
+	#if EXTRUDERS == 1    
+	if(soft_pwm_0 > 0) WRITE(HEATER_0_PIN,1);
+	#endif
     #if EXTRUDERS > 1
     soft_pwm_1 = soft_pwm[1];
-    if(soft_pwm_1 > 0) WRITE(HEATER_1_PIN,1);
+
+	// Check if the requested power is greater than the one from the heater bed
+	// e.g. this is the case while heating up 
+	// both hot ends can be powered up at the same time
+	if((soft_pwm_0 + soft_pwm_1) >= soft_pwm_bed && bidding < bidding_threshold) 
+	{
+		if(soft_pwm_0 > 0){ WRITE(HEATER_0_PIN,1); bidding += 1; }
+		if(soft_pwm_1 > 0){ WRITE(HEATER_1_PIN,1); bidding += 1; }
+	}
+    //if(soft_pwm_1 > 0) WRITE(HEATER_1_PIN,1);
     #endif
     #if EXTRUDERS > 2
     soft_pwm_2 = soft_pwm[2];
@@ -1124,7 +1138,7 @@ ISR(TIMER0_COMPB_vect)
     #endif
     #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
     soft_pwm_b = soft_pwm_bed;
-    if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1);
+    if(soft_pwm_b > 0 && bidding < bidding_threshold ) { WRITE(HEATER_BED_PIN,1); /*bidding += 2;*/ }
     #endif
     #ifdef FAN_SOFT_PWM
     soft_pwm_fan = fanSpeedSoftPwm / 2;
