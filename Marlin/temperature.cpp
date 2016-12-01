@@ -1112,8 +1112,13 @@ ISR(TIMER0_COMPB_vect)
   #endif
 
   if(pwm_count == 0){
-    soft_pwm_0 = soft_pwm[0];
-    if(soft_pwm_0 > 0) WRITE(HEATER_0_PIN,1);
+    #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
+    // Always disable the heater bed
+    soft_pwm_b = constrain(127-soft_pwm_bed,0,127);
+    WRITE(HEATER_BED_PIN,0);
+    #endif
+    soft_pwm_0 = soft_pwm[0];   
+	  if(soft_pwm_0 > 0) WRITE(HEATER_0_PIN,1);
     #if EXTRUDERS > 1
     soft_pwm_1 = soft_pwm[1];
     if(soft_pwm_1 > 0) WRITE(HEATER_1_PIN,1);
@@ -1121,10 +1126,6 @@ ISR(TIMER0_COMPB_vect)
     #if EXTRUDERS > 2
     soft_pwm_2 = soft_pwm[2];
     if(soft_pwm_2 > 0) WRITE(HEATER_2_PIN,1);
-    #endif
-    #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-    soft_pwm_b = soft_pwm_bed;
-    if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1);
     #endif
     #ifdef FAN_SOFT_PWM
     soft_pwm_fan = fanSpeedSoftPwm / 2;
@@ -1139,7 +1140,7 @@ ISR(TIMER0_COMPB_vect)
   if(soft_pwm_2 <= pwm_count) WRITE(HEATER_2_PIN,0);
   #endif
   #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-  if(soft_pwm_b <= pwm_count) WRITE(HEATER_BED_PIN,0);
+  if(soft_pwm_b <= pwm_count && soft_pwm_0 < pwm_count && soft_pwm_1 < pwm_count) WRITE(HEATER_BED_PIN,1);
   #endif
   #ifdef FAN_SOFT_PWM
   if(soft_pwm_fan <= pwm_count) WRITE(FAN_PIN,0);
