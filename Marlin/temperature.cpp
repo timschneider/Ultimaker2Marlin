@@ -215,7 +215,7 @@ void PID_autotune(float temp, int extruder, int ncycles)
       max=max(max,input);
       min=min(min,input);
       if(heating == true && input > temp) {
-        if(millis() - t2 > 5000) {
+        if(millis() - t2 > 2000) {
           heating=false;
           if (extruder<0)
             soft_pwm_bed = (bias - d) >> 1;
@@ -227,7 +227,7 @@ void PID_autotune(float temp, int extruder, int ncycles)
         }
       }
       if(heating == false && input < temp) {
-        if(millis() - t1 > 5000) {
+        if(millis() - t1 > 2000) {
           heating=true;
           t2=millis();
           t_low=t2 - t1;
@@ -280,7 +280,7 @@ void PID_autotune(float temp, int extruder, int ncycles)
         }
       }
     }
-    if(input > (temp + 20)) {
+    if(input > (temp + 50)) {
       SERIAL_PROTOCOLLNPGM("PID Autotune failed! Temperature too high");
       return;
     }

@@ -199,9 +199,15 @@
     //#define  DEFAULT_Kd 114
 
 // Ultimaker2
-    #define  DEFAULT_Kp 10.0
-    #define  DEFAULT_Ki 2.5
-    #define  DEFAULT_Kd 100.0
+//    #define  DEFAULT_Kp 10.0
+//    #define  DEFAULT_Ki 2.5
+//    #define  DEFAULT_Kd 100.0
+
+// Ulticreatr 2x
+    #define  DEFAULT_Kp 15.08
+    #define  DEFAULT_Ki 2.65
+    #define  DEFAULT_Kd 21.43
+    
 
 // Makergear
 //    #define  DEFAULT_Kp 7.0
